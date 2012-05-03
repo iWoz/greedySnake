@@ -1,3 +1,5 @@
-1.write a map editer to edit map£¬generate a xml.
+1.write a map editer to edit mapï¿½ï¿½generate a xml.
 2.write diff.xml to configure diff setting.
 3.use pureMVC to rewrite.
+4.use php and mysql to store scores.
+5.make materials from fla.
