@@ -52,9 +52,8 @@ package control
 			moveTimer.removeEventListener(TimerEvent.TIMER, onMove);
 		}
 		
-		public function changeSpeed(speed:uint):void
+		public function changeDelay(speed:uint):void
 		{
-			Global.speed = speed;
 			moveTimer.delay = 400/speed;
 		}
 		

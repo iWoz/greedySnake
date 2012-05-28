@@ -1,5 +1,7 @@
 package model
 {
+	import control.TimeControler;
+	
 	import util.Utils;
 	
 	import view.StausPanel;
@@ -10,11 +12,14 @@ package model
 		public static var lived:Boolean = false; 
 		public static var paused:Boolean = false;
 		public static var direction:String = Direct.LEFT;
-		public static var score:int = 0;
-		public static var speed:int = 2;
+		
+		private static var score_t:int = 0;
+		private static var speed_t:int = 2;
 		private static var timer_s:int = 0;
 		
 		public static var moveLock:Boolean = false;
+		
+		public static var gateway_url:String = "http://127.0.0.1/snake/gateway.php"; 
 		
 		public static const DIFF_NUM:int = 7;
 		public static const MAP_NUM:int = 5;
@@ -31,6 +36,37 @@ package model
 		public static const OBSTACLE_LENGTH:uint = 10;
 		
 	
+		public static function reset()
+		{
+			Global.score = 0;
+			Global.speed = 2;
+			Global.timer = 0;
+		}
+		
+		public static function set score(sr:int):void
+		{
+			Global.score_t = sr;
+			StausPanel.instance.updateScore(sr);
+		}
+		
+		public static function get score():int
+		{
+			return Global.score_t;
+		}
+		
+		public static function set speed(spd:int):void
+		{
+			Global.speed_t = spd;
+			TimeControler.instance.changeDelay(spd);
+			StausPanel.instance.updateDiffculty(spd);
+		}
+		
+		public static function get speed():int
+		{
+			return Global.speed_t;
+		}
+		
+		
 		public static function set timer(t:int):void
 		{
 			Global.timer_s = t;

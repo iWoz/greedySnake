@@ -48,6 +48,12 @@ package view
 			return _instance;
 		}
 		
+		public function resetAllStatus():void
+		{
+			_scoreBar.text = "分数:"+0;
+			_timeBar.text = "用时"+0;
+		}
+		
 		public function updateScore(score:uint):void
 		{
 			_scoreBar.text = "分数:"+score;

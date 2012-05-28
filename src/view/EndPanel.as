@@ -2,10 +2,15 @@ package view
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	
 	import flashx.textLayout.accessibility.TextAccImpl;
+	
+	import model.Global;
+	
+	import util.HttpRequest;
 	
 	public class EndPanel extends Sprite
 	{
@@ -75,7 +80,18 @@ package view
 			_namePutLable.mouseEnabled = false;
 			_namePutLable.text = "输入完毕";
 			_namePutBtn.addChild(_namePutLable);
+			_namePutBtn.addEventListener(MouseEvent.CLICK, onNamePutComp);
+		}
+		
+		private function onNamePutComp(evt:MouseEvent):void
+		{
+			EndPanel._instance.visible = false;
+			Global.started = false;
 			
+			var name:String = _namePutTf.text;
+			
+			HttpRequest.instance.call('updateScore',{'name':name,'score': Global.score,'time':Global.timer});
+			Global.reset();
 		}
 		
 		private function init(evt:Event):void

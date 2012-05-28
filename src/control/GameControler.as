@@ -29,19 +29,19 @@ package control
 			Global.timer++;
 		}
 		
-		private function startTimeCount():void
+		public function startTimeCount():void
 		{
 			Global.timer = 0;
 			TimeControler.instance.addEventListener(TimeControler.TICK,countTime);
 		}
 		
 		
-		private function resumeTimeCount():void
+		public function resumeTimeCount():void
 		{
 			TimeControler.instance.addEventListener(TimeControler.TICK,countTime);
 		}
 		
-		private function pauseTimeCount():void
+		public function pauseTimeCount():void
 		{
 			TimeControler.instance.removeEventListener(TimeControler.TICK,countTime);
 		}

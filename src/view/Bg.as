@@ -113,7 +113,6 @@ package view
 			if( _food && _snake[0].x == _food.x && _snake[0].y == _food.y)
 			{
 				Global.score += Global.speed;
-				StausPanel.instance.updateScore(Global.score);
 				if(this.stage.contains(_food))
 				{
 					_food.parent.removeChild(_food);
@@ -159,6 +158,7 @@ package view
 					_food.parent.removeChild(_food);
 				}
 				GameControler.instance.stopAllMove();
+				GameControler.instance.pauseTimeCount();
 				EndPanel.instance.visible = true;
 			}
 		}

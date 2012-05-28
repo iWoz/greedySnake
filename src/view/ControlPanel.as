@@ -111,8 +111,7 @@ package view
 					break;
 				}
 			}
-			TimeControler.instance.changeSpeed(i);
-			StausPanel.instance.updateDiffculty(i);
+			Global.speed = i;
 			//setNewDIff
 		}
 		
