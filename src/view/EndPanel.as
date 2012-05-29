@@ -57,6 +57,7 @@ package view
 			_endTf.mouseEnabled = false;
 			_endTf.x = (_bg.width - _endTf.width)/2;
 			_endTf.y = 10;
+			_endTf.textColor = 0x000000;
 			_bg.addChild(_endTf);
 			
 			_namePutTf.background = true;

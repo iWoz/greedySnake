@@ -8,6 +8,8 @@ package view
 	import flash.text.TextField;
 	
 	import model.Global;
+	
+	import util.HttpRequest;
 
 	public class ControlPanel extends Sprite
 	{
@@ -113,6 +115,16 @@ package view
 			}
 			Global.speed = i;
 			//setNewDIff
+		}
+		
+		private function showTops(evt:MouseEvent):void
+		{
+			HttpRequest.instance.call('getTops',{'num':3},showTopScores);
+		}
+		
+		private function showTopScores(data:Object):void
+		{
+			
 		}
 		
 		private function changeMap(evt:MouseEvent):void
