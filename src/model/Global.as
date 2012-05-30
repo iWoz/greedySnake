@@ -19,7 +19,8 @@ package model
 		
 		public static var moveLock:Boolean = false;
 		
-		public static var gateway_url:String = "http://127.0.0.1/snake/gateway.php"; 
+//		public static var gateway_url:String = "http://127.0.0.1/snake/gateway.php";//local test 
+		public static var gateway_url:String = "http://wuzhiwei.net/snake/gateway.php"; //remote test
 		
 		public static const DIFF_NUM:int = 7;
 		public static const MAP_NUM:int = 5;
