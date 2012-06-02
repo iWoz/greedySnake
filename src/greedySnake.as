@@ -10,6 +10,8 @@ package
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
+	import flash.ui.ContextMenu;
+	import flash.ui.ContextMenuItem;
 	
 	import model.Global;
 	
@@ -38,6 +40,13 @@ package
 		public function greedySnake()
 		{
 			loadConfig();
+			//添加右键菜单
+			var myContextMenu:ContextMenu = new ContextMenu();
+			var item:ContextMenuItem = new ContextMenuItem("ver 0.1.1");
+			myContextMenu.customItems.push(item);
+			item = new ContextMenuItem( "UID:001");
+			myContextMenu.customItems.push(item);
+			this.contextMenu = myContextMenu;
 		}
 		
 		private function loadConfig():void

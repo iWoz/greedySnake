@@ -57,7 +57,7 @@ package util
 			trace(resp);
 			if(m_callback != null)
 			{
-				m_callback.apply(resp);
+				m_callback(resp);
 			}
 		}
 		
