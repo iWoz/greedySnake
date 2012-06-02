@@ -32,6 +32,8 @@ package view
 		
 		private var _panels:Object = {"diff":_diffPanel, "map":_mapPanel, "score":_scorePanel};
 		
+		private static var _instance:ControlPanel;
+		
 		public function ControlPanel()
 		{
 			setIntroPanel();
@@ -80,6 +82,15 @@ package view
 			_scorePanel.addChild(_topsText);
 			
 			addEvtListeners();
+		}
+		
+		public static function get instance():ControlPanel
+		{
+			if(!_instance)
+			{
+				_instance = new ControlPanel();
+			}
+			return _instance;
 		}
 		
 		private function addEvtListeners():void

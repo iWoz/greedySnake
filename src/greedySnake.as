@@ -1,6 +1,7 @@
 package
 {
 	import control.GameControler;
+	import control.ModeControler;
 	import control.TimeControler;
 	
 	import flash.display.Sprite;
@@ -28,12 +29,12 @@ package
 	{
 		private var _pool:Sprite = new Sprite();
 		private var _stPanel:StausPanel = StausPanel.instance;
-		private var _endPanel:EndPanel = new EndPanel();
-		private var _ctrlPanel:ControlPanel = new ControlPanel();
+		private var _endPanel:EndPanel = EndPanel.instance;
+		private var _ctrlPanel:ControlPanel = ControlPanel.instance;
 		private var _bg:Bg = Bg.instance;
 		
 		private var _xmlIndex:int = 0;
-		private const XML_CONDIG:Array = ["diff"];
+		private const XML_CONDIG:Array = ["diff","map"];
 		private const FILE_HEAD:String = "config/";
 		private const EXT_NAME:String = ".xml";
 		
@@ -95,6 +96,16 @@ package
 		
 		private function onKeyDown(evt:KeyboardEvent):void
 		{
+			if(evt.ctrlKey && evt.keyCode == 77)
+			{
+				ModeControler.instance.changeMode(Global.MODE_MAPING);
+				return;
+			}
+			else if(evt.ctrlKey && evt.keyCode == 78)
+			{
+				ModeControler.instance.changeMode(Global.MODE_NORMAL);
+				return;
+			}
 			switch(evt.keyCode)
 			{
 				//ENTER

@@ -13,11 +13,13 @@ package model
 		public static var paused:Boolean = false;
 		public static var direction:String = Direct.LEFT;
 		
+		private static var currmap:int = 1;
 		private static var score_t:int = 0;
 		private static var speed_t:int = 2;
 		private static var timer_s:int = 0;
 		
 		public static var moveLock:Boolean = false;
+		public static var mode:String = Global.MODE_NORMAL;
 		
 //		public static var gateway_url:String = "http://127.0.0.1/snake/gateway.php";//local test 
 		public static var gateway_url:String = "http://wuzhiwei.net/snake/gateway.php"; //remote test
@@ -30,15 +32,23 @@ package model
 		public static const COLOR_SCORE:uint = 0x007FFF;
 		public static const COLOR_FOOD:uint = 0x66FF00;
 		public static const COLOR_SNAKE:uint = 0xfff000;
+		public static const COLOR_GRID:uint = 0xffff00;
+		public static const COLOR_OBSTACLE:uint = 0x000000;
 		public static const POOL_WIDTH:uint = 200;
 		public static const POOL_HEIGHT:uint = 200;
+		
 		public static const SNAKE_KNOT_LENGTH:uint = 10;
 		public static const FOOD_LENGTH:uint = 10;
 		public static const OBSTACLE_LENGTH:uint = 10;
 		
+		public static const MODE_NORMAL:String = "normalMode";
+		public static const MODE_MAPING:String = "mapingMode";
+		
 	
 		public static function reset()
 		{
+			Global.started = false;
+			Global.lived = false;
 			Global.score = 0;
 			Global.speed = 2;
 			Global.timer = 0;

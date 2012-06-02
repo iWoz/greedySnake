@@ -3,10 +3,13 @@ package view
 	import control.GameControler;
 	
 	import flash.display.Sprite;
+	import flash.events.MouseEvent;
+	import flash.net.FileReference;
 	
 	import model.Global;
 	import model.KnotType;
 	
+	import view.knot.Knot;
 	import view.knot.RoundRectKnot;
 
 	public class Bg extends Sprite
@@ -16,11 +19,17 @@ package view
 		private var _pool:Sprite = new Sprite();
 		private var _food:Sprite = new Sprite();
 		private var _head:Sprite = new Sprite();
+		private var _grid:Sprite = new Sprite();
+		private var _obst:Sprite = new Sprite();
+		private var _outPutBtn:Sprite = new Sprite();
+		
 		private var _snake:Array = [];
 		private var _obstacles:Array = [];
+		private var _mapings:Array = [];
 		
 		public function Bg()
 		{
+			
 		}
 		
 		public static function get instance():Bg
@@ -33,6 +42,9 @@ package view
 				EndPanel.instance.x = (_instance.width - EndPanel.instance.width)/2;
 				EndPanel.instance.y = (_instance.height - EndPanel.instance.height)/2;
 				EndPanel.instance.visible = false;
+				_instance.drawGrid();
+				_instance.initMapingSence();
+				_instance.showMapingTool(false);
 			}
 			return _instance;
 		}
@@ -209,6 +221,117 @@ package view
 			else if(_snake[0].y < Global.POOL_HEIGHT - _snake[0].height && _snake[0].y >=0)
 			{
 				_snake[0].y += _snake[0].height;
+			}
+		}
+		
+		private function drawGrid():void
+		{
+			_grid.graphics.clear();
+//			_grid.graphics.beginFill(Global.COLOR_GRID);
+			_grid.graphics.lineStyle(1,Global.COLOR_GRID);
+			for(var i:int = 0;i<=_pool.width;i+=Global.OBSTACLE_LENGTH)
+			{
+				_grid.graphics.moveTo(i,0);
+				_grid.graphics.lineTo(i,_pool.height);
+			}
+			for(var j:int = 0;j<=_pool.height;j+=Global.OBSTACLE_LENGTH)
+			{
+				_grid.graphics.moveTo(0,j);
+				_grid.graphics.lineTo(_pool.width,j);
+			}
+			_grid.graphics.endFill();
+			_pool.addChild(_grid);
+		}
+		
+		public function clearSnakeAndFood():void
+		{
+			for each(var knot:Sprite in _snake)
+			{
+				if(knot.parent)
+				{
+					knot.parent.removeChild(knot);
+				}
+			}
+			_snake = [];
+			if(_food && _food.parent)
+			{
+				_food.parent.removeChild(_food);
+			}
+		}
+		
+		private function initMapingSence():void
+		{
+			_obst = new RoundRectKnot(Global.OBSTACLE_LENGTH,Global.OBSTACLE_LENGTH,5,KnotType.NOTHING,Global.COLOR_OBSTACLE);
+			_obst.buttonMode = true;
+			_obst.x = _pool.x+_pool.width+10;
+			_obst.y = _pool.y+50;
+			addChild(_obst);
+			_obst.addEventListener(MouseEvent.CLICK,genObst);
+			
+			_outPutBtn = new Sprite();
+			_outPutBtn.buttonMode = true;
+			_outPutBtn.graphics.beginFill(0x123456);
+			_outPutBtn.graphics.drawCircle(0,0,10);
+			_outPutBtn.graphics.endFill();
+			_outPutBtn.x = _pool.x+_pool.width+10;
+			_outPutBtn.y = _pool.y+100;
+			addChild(_outPutBtn);
+			_outPutBtn.addEventListener(MouseEvent.CLICK,outPutMap);
+		}
+		
+		public function showMapingTool(showOrNot:Boolean):void
+		{
+			_grid.visible = showOrNot;
+			_obst.visible = showOrNot;
+			_outPutBtn.visible = showOrNot;
+			_mapings = [];
+		}
+		
+		private function genObst(evt:MouseEvent):void
+		{
+			var obst:Sprite = new RoundRectKnot(Global.OBSTACLE_LENGTH,Global.OBSTACLE_LENGTH,5,KnotType.OBSTACLE,Global.COLOR_OBSTACLE);
+			obst.x = - 20;
+			obst.y = 0;
+			_pool.addChild(obst);
+			obst.addEventListener(MouseEvent.MOUSE_DOWN,startMaping);
+		}
+		
+		private function startMaping(evt:MouseEvent):void
+		{
+			var obst:Sprite = (evt.currentTarget as Sprite);
+			obst.startDrag();
+			obst.addEventListener(MouseEvent.CLICK, stackHere);
+		}
+		
+		private function stackHere(evt:MouseEvent):void
+		{
+			var obst:Sprite = (evt.currentTarget as Sprite);
+			if(obst.x < 0 || obst.x>=_pool.width || obst.y < 0 || obst.y >= _pool.height)
+			{
+				return;
+			}
+			obst.x = Math.round(obst.x/Global.OBSTACLE_LENGTH)*Global.OBSTACLE_LENGTH;
+			obst.y = Math.round(obst.y/Global.OBSTACLE_LENGTH)*Global.OBSTACLE_LENGTH;
+			obst.stopDrag();
+			if(_mapings.indexOf(obst) >= 0)
+			{
+				_mapings.splice(_mapings.indexOf(obst),1);
+			}
+			_mapings.push(obst);
+		}
+		
+		private function outPutMap(evt:MouseEvent):void
+		{
+			if(_mapings && _mapings.length)
+			{
+				var mapXML:XML = new XML();
+				mapXML = <map id="x"></map>;
+				for each(var obst:Sprite in _mapings)
+				{
+					mapXML.appendChild(<obst x={obst.x} y={obst.y} />);
+				}
+				var fr:FileReference = new FileReference();
+				fr.save(mapXML,"map.xml");
 			}
 		}
 	}
