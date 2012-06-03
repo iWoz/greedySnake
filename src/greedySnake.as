@@ -45,7 +45,9 @@ package
 			var myContextMenu:ContextMenu = new ContextMenu();
 			var item:ContextMenuItem = new ContextMenuItem("ver 0.1.1");
 			myContextMenu.customItems.push(item);
-			item = new ContextMenuItem( "UID:001");
+			item = new ContextMenuItem( "Author:Tim Wu");
+			myContextMenu.customItems.push(item);
+			item = new ContextMenuItem( "Email me:WuAGeek@163.com or WuAGeek@gmail.com");
 			myContextMenu.customItems.push(item);
 			this.contextMenu = myContextMenu;
 		}
