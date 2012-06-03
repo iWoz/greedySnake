@@ -127,7 +127,7 @@ package view
 				{
 					_panels[panelname].visible = false;
 				}
-				if(panelname == "score")
+				if(evt.currentTarget.name == "score")
 				{
 					showTops();
 				}
@@ -206,7 +206,7 @@ package view
 			declare.text = ("游戏说明\n");
 			declare.appendText("Enter键:\t开始游戏\n");
 			declare.appendText("方向键:\t控制方向\n");
-			declare.appendText("Esc键:\t\t暂停游戏\n");
+			declare.appendText("Esc键:\t暂停游戏\n");
 			declare.appendText("空格键:\t恢复游戏\n");
 			_introPanel.addChild(declare);
 		}

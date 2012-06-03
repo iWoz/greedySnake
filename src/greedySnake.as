@@ -96,14 +96,25 @@ package
 		
 		private function onKeyDown(evt:KeyboardEvent):void
 		{
+			//Ctrl+M
 			if(evt.ctrlKey && evt.keyCode == 77)
 			{
 				ModeControler.instance.changeMode(Global.MODE_MAPING);
 				return;
 			}
+			//Ctrl+N
 			else if(evt.ctrlKey && evt.keyCode == 78)
 			{
 				ModeControler.instance.changeMode(Global.MODE_NORMAL);
+				return;
+			}
+			//Ctrl+C
+			else if(evt.ctrlKey && evt.keyCode == 67)
+			{
+				if(Global.mode != Global.MODE_NORMAL)
+				{
+					Bg.instance.clearAllMaping();
+				}
 				return;
 			}
 			switch(evt.keyCode)

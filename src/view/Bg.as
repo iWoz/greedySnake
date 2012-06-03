@@ -1,9 +1,11 @@
 package view
 {
 	import control.GameControler;
+	import control.ModeControler;
 	
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
+	import flash.geom.Point;
 	import flash.net.FileReference;
 	
 	import model.Global;
@@ -23,7 +25,11 @@ package view
 		private var _head:Sprite = new Sprite();
 		private var _grid:Sprite = new Sprite();
 		private var _obst:Sprite = new Sprite();
+		private var _clear:Sprite = new Sprite();
 		private var _outPutBtn:Sprite = new Sprite();
+		private var _initPos:Sprite = new Sprite();
+		
+		private var _moveObst:Sprite;
 		
 		private var _snake:Array = [];
 		private var _obstacles:Array = [];
@@ -245,7 +251,7 @@ package view
 			_pool.addChild(_grid);
 		}
 		
-		public function clearSnakeAndFood():void
+		public function clearSnakeFoodObst():void
 		{
 			for each(var knot:Sprite in _snake)
 			{
@@ -255,6 +261,14 @@ package view
 				}
 			}
 			_snake = [];
+			for each(var obst:Sprite in _obstacles)
+			{
+				if(obst.parent)
+				{
+					obst.parent.removeChild(obst);
+				}
+			}
+			_obstacles = [];
 			if(_food && _food.parent)
 			{
 				_food.parent.removeChild(_food);
@@ -263,6 +277,13 @@ package view
 		
 		private function initMapingSence():void
 		{
+			_clear = new RoundRectKnot(Global.OBSTACLE_LENGTH,Global.OBSTACLE_LENGTH,5,KnotType.NOTHING,0xEEEEEE);
+			_clear.buttonMode = true;
+			_clear.x = _pool.x+_pool.width+10;
+			_clear.y = _pool.y+20;
+			addChild(_clear);
+			_clear.addEventListener(MouseEvent.CLICK,changeToClearMode);
+			
 			_obst = new RoundRectKnot(Global.OBSTACLE_LENGTH,Global.OBSTACLE_LENGTH,5,KnotType.NOTHING,Global.COLOR_OBSTACLE);
 			_obst.buttonMode = true;
 			_obst.x = _pool.x+_pool.width+10;
@@ -279,6 +300,31 @@ package view
 			_outPutBtn.y = _pool.y+100;
 			addChild(_outPutBtn);
 			_outPutBtn.addEventListener(MouseEvent.CLICK,outPutMap);
+			
+			_initPos = new RoundRectKnot(Global.SNAKE_KNOT_LENGTH,Global.SNAKE_KNOT_LENGTH,Global.SNAKE_KNOT_LENGTH,KnotType.NOTHING,Global.COLOR_SNAKE);
+			_initPos.x = Global.POOL_WIDTH/2;
+			_initPos.y = Global.POOL_HEIGHT/2;
+			_pool.addChild(_initPos);
+		}
+		
+		private function changeToClearMode(evt:MouseEvent):void
+		{
+			ModeControler.instance.changeMode(Global.MODE_CLEAR);
+			if(_moveObst)
+			{
+				_moveObst.removeEventListener(MouseEvent.MOUSE_MOVE,onMouseMove);
+				_moveObst.removeEventListener(MouseEvent.CLICK,stackHere);
+				_moveObst.removeEventListener(MouseEvent.CLICK,editObst);
+				if(_moveObst.parent)
+				{
+					_moveObst.parent.removeChild(_moveObst);
+				}
+				_moveObst = null;
+			}
+			for each(var obst:Sprite in _mapings)
+			{
+				obst.removeEventListener(MouseEvent.CLICK,stackHere);
+			}
 		}
 		
 		public function showMapingTool(showOrNot:Boolean):void
@@ -287,22 +333,32 @@ package view
 			_obst.visible = showOrNot;
 			_outPutBtn.visible = showOrNot;
 			_mapings = [];
+			_initPos.visible = showOrNot;
+			_clear.visible = showOrNot;
 		}
 		
 		private function genObst(evt:MouseEvent):void
 		{
 			var obst:Sprite = new RoundRectKnot(Global.OBSTACLE_LENGTH,Global.OBSTACLE_LENGTH,5,KnotType.OBSTACLE,Global.COLOR_OBSTACLE);
-			obst.x = - 20;
-			obst.y = 0;
+			obst.x = _pool.width+_pool.x+5;
+			obst.y = 50;
 			_pool.addChild(obst);
-			obst.addEventListener(MouseEvent.MOUSE_DOWN,startMaping);
+
+			_moveObst = obst;
+			
+			this.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 		}
 		
-		private function startMaping(evt:MouseEvent):void
+		
+		private function onMouseMove(evt:MouseEvent):void
 		{
-			var obst:Sprite = (evt.currentTarget as Sprite);
-			obst.startDrag();
-			obst.addEventListener(MouseEvent.CLICK, stackHere);
+			if(_moveObst && _moveObst.parent)
+			{
+				_moveObst.x = _moveObst.parent.globalToLocal(new Point(evt.stageX,evt.stageY)).x-(Global.OBSTACLE_LENGTH/2);
+				_moveObst.y = _moveObst.parent.globalToLocal(new Point(evt.stageX,evt.stageY)).y-(Global.OBSTACLE_LENGTH/2);
+				
+				_moveObst.addEventListener(MouseEvent.CLICK,stackHere);
+			}
 		}
 		
 		private function stackHere(evt:MouseEvent):void
@@ -314,12 +370,38 @@ package view
 			}
 			obst.x = Math.round(obst.x/Global.OBSTACLE_LENGTH)*Global.OBSTACLE_LENGTH;
 			obst.y = Math.round(obst.y/Global.OBSTACLE_LENGTH)*Global.OBSTACLE_LENGTH;
-			obst.stopDrag();
 			if(_mapings.indexOf(obst) >= 0)
 			{
 				_mapings.splice(_mapings.indexOf(obst),1);
 			}
 			_mapings.push(obst);
+			obst.addEventListener(MouseEvent.CLICK,editObst);
+			_moveObst = null;
+			
+			var newobst:Sprite = new RoundRectKnot(Global.OBSTACLE_LENGTH,Global.OBSTACLE_LENGTH,5,KnotType.OBSTACLE,Global.COLOR_OBSTACLE);
+			newobst.x = obst.x;
+			newobst.y = obst.y;
+			_pool.addChild(newobst);
+			_moveObst = newobst;
+		}
+		
+		private function editObst(evt:MouseEvent):void
+		{
+			switch(Global.mode)
+			{
+				case Global.MODE_CLEAR:
+					if(evt.currentTarget.parent)
+					{
+						evt.currentTarget.parent.removeChild(evt.currentTarget);
+					}
+					if(_mapings.indexOf(evt.currentTarget)>=0)
+					{
+						_mapings.splice(_mapings.indexOf(evt.currentTarget),1);
+					}
+					break;
+				case Global.MODE_MAPING:
+					break;
+			}
 		}
 		
 		private function outPutMap(evt:MouseEvent):void
@@ -369,6 +451,21 @@ package view
 				}
 			}
 			
+		}
+		
+		public function clearAllMaping():void
+		{
+			for each(var obst:Sprite in _mapings)
+			{
+				if(obst.parent)
+				{
+					obst.parent.removeChild(obst);
+				}
+				obst.removeEventListener(MouseEvent.MOUSE_MOVE,onMouseMove);
+				obst.removeEventListener(MouseEvent.CLICK,stackHere);
+				obst.removeEventListener(MouseEvent.CLICK,editObst);
+			}
+			_mapings = [];
 		}
 		
 	}

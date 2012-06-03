@@ -36,6 +36,8 @@ package control
 				case Global.MODE_MAPING:
 					toMapingMode();
 					break;
+				case Global.MODE_CLEAR:
+					Global.mode = mode;
 				default:
 					trace("wrong mode!");
 					break;
@@ -44,6 +46,8 @@ package control
 		
 		private function toNormalMode():void
 		{
+			Global.mode = Global.MODE_NORMAL;
+			
 			Bg.instance.showMapingTool(false);
 			StausPanel.instance.visible = true;
 			ControlPanel.instance.visible = true;
@@ -52,6 +56,8 @@ package control
 		
 		private function toMapingMode():void
 		{
+			Global.mode = Global.MODE_MAPING;
+			
 			TimeControler.instance.stop();
 			GameControler.instance.stopAllMove();
 			Global.reset();
@@ -61,7 +67,7 @@ package control
 			ControlPanel.instance.visible = false;
 			_lastEndPanelVis = EndPanel.instance.visible;
 			EndPanel.instance.visible = false;
-			Bg.instance.clearSnakeAndFood();
+			Bg.instance.clearSnakeFoodObst();
 		}
 	
 	}

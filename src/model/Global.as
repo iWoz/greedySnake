@@ -32,7 +32,7 @@ package model
 		public static const COLOR_SCORE:uint = 0x007FFF;
 		public static const COLOR_FOOD:uint = 0x66FF00;
 		public static const COLOR_SNAKE:uint = 0xfff000;
-		public static const COLOR_GRID:uint = 0xffff00;
+		public static const COLOR_GRID:uint = 0x000000;
 		public static const COLOR_OBSTACLE:uint = 0x000000;
 		public static const POOL_WIDTH:uint = 200;
 		public static const POOL_HEIGHT:uint = 200;
@@ -44,6 +44,7 @@ package model
 		
 		public static const MODE_NORMAL:String = "normalMode";
 		public static const MODE_MAPING:String = "mapingMode";
+		public static const MODE_CLEAR:String = "clearMode";
 		
 	
 		public static function reset()
