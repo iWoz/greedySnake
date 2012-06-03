@@ -9,6 +9,8 @@ package view
 	import model.Global;
 	import model.KnotType;
 	
+	import util.XMLReader;
+	
 	import view.knot.Knot;
 	import view.knot.RoundRectKnot;
 
@@ -334,5 +336,40 @@ package view
 				fr.save(mapXML,"map.xml");
 			}
 		}
+		
+		public function inputMap(mapid:int):void
+		{
+			var mapConf:XML = XMLReader.instance.getXMLByName("map");
+			var mapList:XMLList = mapConf.child("map");
+			var obstList:XMLList;
+			var obstKnot:RoundRectKnot;
+			
+			for each(var obst:RoundRectKnot in _obstacles)
+			{
+				if(obst.parent)
+				{
+					obst.parent.removeChild(obst);
+				}
+			}
+			_obstacles = [];
+			
+			for each(var map:XML in mapList)
+			{
+				if( int(map.@id) == mapid)
+				{
+					obstList = map.child("obst");
+					for each(var obstPos:XML in obstList)
+					{
+						obstKnot = new RoundRectKnot(Global.OBSTACLE_LENGTH, Global.OBSTACLE_LENGTH, Global.OBSTACLE_ELIIPSE,KnotType.OBSTACLE,Global.COLOR_OBSTACLE);
+						obstKnot.x = int(obstPos.@x);
+						obstKnot.y = int(obstPos.@y);
+						_pool.addChild(obstKnot);
+						_obstacles.push(obstKnot);
+					}
+				}
+			}
+			
+		}
+		
 	}
 }

@@ -40,6 +40,7 @@ package model
 		public static const SNAKE_KNOT_LENGTH:uint = 10;
 		public static const FOOD_LENGTH:uint = 10;
 		public static const OBSTACLE_LENGTH:uint = 10;
+		public static const OBSTACLE_ELIIPSE:uint = 3;
 		
 		public static const MODE_NORMAL:String = "normalMode";
 		public static const MODE_MAPING:String = "mapingMode";

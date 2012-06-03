@@ -106,7 +106,7 @@ package view
 					_diffButts[i].addEventListener(MouseEvent.CLICK, changeDiff);					
 				}
 			}
-			for(i = 0;i<_mapButts.length &&  _mapButts[i];i++)
+			for(i = 0;i<_mapButts.length;i++)
 			{
 				if(_mapButts[i])
 				{
@@ -151,6 +151,15 @@ package view
 		
 		private function changeMap(evt:MouseEvent):void
 		{
+//			GameControler.instance.restartGame();
+			for(var i:int = 1;i<_mapButts.length;i++)
+			{
+				if(_mapButts[i] && _mapButts[i] == evt.target)
+				{
+					break;
+				}
+			}
+			Bg.instance.inputMap(i);
 			//endGame
 			//setName
 		}
