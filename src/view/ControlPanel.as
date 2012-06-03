@@ -6,8 +6,11 @@ package view
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
+	import flash.utils.Dictionary;
 	
 	import model.Global;
+	
+	import util.HttpRequest;
 
 	public class ControlPanel extends Sprite
 	{
@@ -19,6 +22,7 @@ package view
 		private var _mapPanel:Sprite = new Sprite();
 		private var _scoreBtn:Sprite = new Sprite();
 		private var _scorePanel:Sprite = new Sprite();
+		private var _topsText:TextField = new TextField();
 		
 		private var _diffButts:Array = [];
 		private var _diffTexts:Array = [];
@@ -26,6 +30,9 @@ package view
 		private var _mapButts:Array = [];
 		private var _mapTexts:Array = [];
 		
+		private var _panels:Object = {"diff":_diffPanel, "map":_mapPanel, "score":_scorePanel};
+		
+		private static var _instance:ControlPanel;
 		
 		public function ControlPanel()
 		{
@@ -36,7 +43,8 @@ package view
 			_diffBtn.x = 5;
 			_diffBtn.y = _introPanel.y + _introPanel.height;
 			addChild(_diffBtn);
-//			setDiffPanel();
+			_diffBtn.name = "diff";
+			
 			setChosePanel(_diffPanel, Global.COLOR_DIFF, Global.DIFF_NUM, _diffButts, _diffTexts);
 			_diffPanel.x = _diffBtn.x+_diffBtn.width+5;
 			_diffPanel.y = _diffBtn.y;
@@ -47,6 +55,8 @@ package view
 			_mapBtn.x = 5;
 			_mapBtn.y = _diffBtn.y+_diffBtn.height+15;
 			addChild(_mapBtn);
+			_mapBtn.name = "map";
+			
 			setChosePanel(_mapPanel, Global.COLOR_MAP, Global.MAP_NUM, _mapButts, _mapTexts);
 			_mapPanel.x = _mapBtn.x+_mapBtn.width+5;
 			_mapPanel.y = _mapBtn.y;
@@ -57,14 +67,37 @@ package view
 			_scoreBtn.x = 5;
 			_scoreBtn.y = _mapBtn.y+_mapBtn.height+15;
 			addChild(_scoreBtn);
+			_scoreBtn.name = "score";
+			
+			_scorePanel.graphics.beginFill(Global.COLOR_SCORE);
+			_scorePanel.graphics.drawRoundRect(0,0,150,100,10,10);
+			_scorePanel.graphics.endFill();
+			_scorePanel.x = _scoreBtn.x+_scoreBtn.width+5;
+			_scorePanel.y = _scoreBtn.y - 50;
+			addChild(_scorePanel);
+			_scorePanel.visible = false;
+			
+			_topsText.width = _scorePanel.width;
+			_topsText.x = 6;
+			_scorePanel.addChild(_topsText);
+			
 			addEvtListeners();
+		}
+		
+		public static function get instance():ControlPanel
+		{
+			if(!_instance)
+			{
+				_instance = new ControlPanel();
+			}
+			return _instance;
 		}
 		
 		private function addEvtListeners():void
 		{
-			_diffBtn.addEventListener(MouseEvent.CLICK, switchDiffPanel);
-			_mapBtn.addEventListener(MouseEvent.CLICK, switchMapPanel);
-			_scoreBtn.addEventListener(MouseEvent.CLICK, switchScorePanel);
+			_diffBtn.addEventListener(MouseEvent.CLICK, switchVisible);
+			_mapBtn.addEventListener(MouseEvent.CLICK, switchVisible);
+			_scoreBtn.addEventListener(MouseEvent.CLICK, switchVisible);
 			var i:int;
 			for(i = 0;i<_diffButts.length;i++)
 			{
@@ -73,7 +106,7 @@ package view
 					_diffButts[i].addEventListener(MouseEvent.CLICK, changeDiff);					
 				}
 			}
-			for(i = 0;i<_mapButts.length &&  _mapButts[i];i++)
+			for(i = 0;i<_mapButts.length;i++)
 			{
 				if(_mapButts[i])
 				{
@@ -82,22 +115,23 @@ package view
 			}
 		}
 		
-		private function switchDiffPanel(evt:MouseEvent):void
+		private function switchVisible(evt:MouseEvent):void
 		{
-			_diffPanel.visible == true ? _diffPanel.visible = false : _diffPanel.visible = true;
-			_mapPanel.visible = false;
-		}
-		
-		private function switchMapPanel(evt:MouseEvent):void
-		{
-			_diffPanel.visible = false;
-			_mapPanel.visible == true ? _mapPanel.visible = false : _mapPanel.visible = true;
-		}
-		
-		private function switchScorePanel(evt:MouseEvent):void
-		{
-			_diffPanel.visible = false;
-			_mapPanel.visible = false;
+			for(var panelname:String in _panels)
+			{
+				if(panelname == evt.currentTarget.name)
+				{
+					_panels[panelname].visible = !(_panels[panelname].visible);
+				}
+				else
+				{
+					_panels[panelname].visible = false;
+				}
+				if(panelname == "score")
+				{
+					showTops();
+				}
+			}
 		}
 		
 		private function changeDiff(evt:MouseEvent):void
@@ -117,12 +151,50 @@ package view
 		
 		private function changeMap(evt:MouseEvent):void
 		{
+//			GameControler.instance.restartGame();
+			for(var i:int = 1;i<_mapButts.length;i++)
+			{
+				if(_mapButts[i] && _mapButts[i] == evt.target)
+				{
+					break;
+				}
+			}
+			Bg.instance.inputMap(i);
 			//endGame
 			//setName
 		}
 		
-		private function setBg():void
+		private function showTops():void
 		{
+			HttpRequest.instance.call('getTops',{'num':3},showTopScores);
+		}
+		
+		private function showTopScores(data:Object):void
+		{
+			_topsText.text = "排名\t\t玩家\t\t分数\r\n";
+			var topnames:Array = ["神马","神马","神马"];
+			var topscores:Array = [0,0,0];
+			if( data && data.hasOwnProperty("code") && data["code"] == 0 )
+			{
+				var i:int = 0;
+				for each(var player:Object in data["data"])
+				{
+					if(i<topnames.length)
+					{
+						topnames[i] = player["name"];
+						topscores[i] = player["score"];
+					}
+					i++;
+				}
+			}
+			_topsText.appendText("1st\t\t"+topnames[0]+"\t\t"+topscores[0]+"\r\n");
+			_topsText.appendText("2nd\t\t"+topnames[1]+"\t\t"+topscores[1]+"\r\n");
+			_topsText.appendText("3rd\t\t"+topnames[2]+"\t\t"+topscores[2]+"\r\n");
+		}
+		
+		private function fillTops(data:Object):void
+		{
+			
 		}
 		
 		private function setIntroPanel():void

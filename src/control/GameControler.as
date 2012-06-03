@@ -56,6 +56,7 @@ package control
 				Bg.instance.generateFood();
 				initMove();
 				startTimeCount();
+				TimeControler.instance.start();
 			}
 		}
 		

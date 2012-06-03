@@ -1,6 +1,7 @@
 package
 {
 	import control.GameControler;
+	import control.ModeControler;
 	import control.TimeControler;
 	
 	import flash.display.Sprite;
@@ -10,6 +11,8 @@ package
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
+	import flash.ui.ContextMenu;
+	import flash.ui.ContextMenuItem;
 	
 	import model.Global;
 	
@@ -26,18 +29,25 @@ package
 	{
 		private var _pool:Sprite = new Sprite();
 		private var _stPanel:StausPanel = StausPanel.instance;
-		private var _endPanel:EndPanel = new EndPanel();
-		private var _ctrlPanel:ControlPanel = new ControlPanel();
+		private var _endPanel:EndPanel = EndPanel.instance;
+		private var _ctrlPanel:ControlPanel = ControlPanel.instance;
 		private var _bg:Bg = Bg.instance;
 		
 		private var _xmlIndex:int = 0;
-		private const XML_CONDIG:Array = ["diff"];
+		private const XML_CONDIG:Array = ["diff","map"];
 		private const FILE_HEAD:String = "config/";
 		private const EXT_NAME:String = ".xml";
 		
 		public function greedySnake()
 		{
 			loadConfig();
+			//添加右键菜单
+			var myContextMenu:ContextMenu = new ContextMenu();
+			var item:ContextMenuItem = new ContextMenuItem("ver 0.1.1");
+			myContextMenu.customItems.push(item);
+			item = new ContextMenuItem( "UID:001");
+			myContextMenu.customItems.push(item);
+			this.contextMenu = myContextMenu;
 		}
 		
 		private function loadConfig():void
@@ -86,6 +96,16 @@ package
 		
 		private function onKeyDown(evt:KeyboardEvent):void
 		{
+			if(evt.ctrlKey && evt.keyCode == 77)
+			{
+				ModeControler.instance.changeMode(Global.MODE_MAPING);
+				return;
+			}
+			else if(evt.ctrlKey && evt.keyCode == 78)
+			{
+				ModeControler.instance.changeMode(Global.MODE_NORMAL);
+				return;
+			}
 			switch(evt.keyCode)
 			{
 				//ENTER
