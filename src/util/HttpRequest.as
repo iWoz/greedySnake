@@ -53,7 +53,7 @@ package util
 		
 		private function onPushComp(evt:Event):void
 		{
-			var resp:Object = JSON.decode(evt.currentTarget.data);
+			var resp:Object = new JSONDecoder(evt.currentTarget.data, true).getValue();
 			trace(resp);
 			if(m_callback != null)
 			{

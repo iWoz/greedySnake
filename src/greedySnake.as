@@ -16,8 +16,6 @@ package
 	
 	import model.Global;
 	
-	import org.osmf.net.dynamicstreaming.INetStreamMetrics;
-	
 	import util.XMLReader;
 	
 	import view.Bg;
